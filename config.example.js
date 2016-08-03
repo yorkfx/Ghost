@@ -16,7 +16,7 @@ config = {
         database: {
             client: 'sqlite3',
             connection: {
-                filename: path.join(__dirname, '/content/data/ghost-patronus.db')
+                filename: path.join(__dirname, '/content/data/ghost-patronus2.db')
             },
             debug: false
         },
@@ -58,7 +58,7 @@ config = {
         database: {
             client: 'sqlite3',
             connection: {
-                filename: path.join(__dirname, '/content/data/ghost-dev-patronus.db')
+                filename: path.join(__dirname, '/content/data/ghost-dev-patronus2.db')
             },
             debug: false
         },
