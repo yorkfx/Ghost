@@ -81,7 +81,7 @@ invites = {
 
         return pipeline(tasks, options);
     },
-    
+
     //@TODO: invite email twice?
     //@TODO: fix user1 ;)
     add: function add(object, options) {
@@ -116,7 +116,7 @@ invites = {
                 var payload = {
                     mail: [{
                         message: {
-                            to: object.email,
+                            to: options.data.invites[0].email,
                             subject: i18n.t('common.api.users.mail.invitedByName', {
                                 invitedByName: emailData.invitedByName,
                                 blogName: emailData.blogName
