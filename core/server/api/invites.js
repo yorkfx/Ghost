@@ -82,52 +82,64 @@ invites = {
         return pipeline(tasks, options);
     },
 
-    add: function add(data, options) {
-        //@TODO: input validation (email is required?)
-        //@TODO: invite email twice?
-        //@TODO: fix user1 ;)
-        var loggedInUser = options.context.user1,
+    //@TODO: input validation (email is required?)
+    //@TODO: invite email twice?
+    //@TODO: fix user1 ;)
+    add: function add(object, options) {
+        var tasks,
+            loggedInUser = options.context.user1,
             emailData,
             invite;
 
-        return dataProvider.Invite.add({
-            email: data.email
-        }, options).then(function (_invite) {
-            invite = _invite;
+        function modelQuery(options) {
+            return dataProvider.Invite.add({
+                email: options.data.invites[0].email
+            }, options).then(function (_invite) {
+                invite = _invite;
 
-            //@TODO: get blogname
-            var baseUrl = config.forceAdminSSL ? (config.urlSSL || config.url) : config.url;
+                //@TODO: get blogname
+                var baseUrl = config.forceAdminSSL ? (config.urlSSL || config.url) : config.url;
 
-            emailData = {
-                blogName: 'Boobie blog',
-                invitedByName: loggedInUser.name,
-                invitedByEmail: loggedInUser.email,
-                //@TODO: resetLink sounds weird
-                resetLink: baseUrl.replace(/\/$/, '') + '/ghost/signup/' + globalUtils.encodeBase64URLsafe(invite.get('token')) + '/'
-            };
+                emailData = {
+                    blogName: 'Boobie blog',
+                    invitedByName: loggedInUser.name,
+                    invitedByEmail: loggedInUser.email,
+                    //@TODO: resetLink sounds weird
+                    resetLink: baseUrl.replace(/\/$/, '') + '/ghost/signup/' + globalUtils.encodeBase64URLsafe(invite.get('token')) + '/'
+                };
 
-            return mail.utils.generateContent({data: emailData, template: 'invite-user'});
-        }).then(function (emailContent) {
-            var payload = {
-                mail: [{
-                    message: {
-                        to: data.email,
-                        subject: i18n.t('common.api.users.mail.invitedByName', {
-                            invitedByName: emailData.invitedByName,
-                            blogName: emailData.blogName
-                        }),
-                        html: emailContent.html,
-                        text: emailContent.text
-                    },
-                    options: {}
-                }]
-            };
+                return mail.utils.generateContent({data: emailData, template: 'invite-user'});
+            }).then(function (emailContent) {
+                var payload = {
+                    mail: [{
+                        message: {
+                            to: object.email,
+                            subject: i18n.t('common.api.users.mail.invitedByName', {
+                                invitedByName: emailData.invitedByName,
+                                blogName: emailData.blogName
+                            }),
+                            html: emailContent.html,
+                            text: emailContent.text
+                        },
+                        options: {}
+                    }]
+                };
 
-            return apiMail.send(payload, {context: {internal: true}});
-        }).then(function () {
-            options.id = invite.id;
-            return dataProvider.Invite.edit({status: 'sent'}, options);
-        });
+                return apiMail.send(payload, {context: {internal: true}});
+            }).then(function () {
+                options.id = invite.id;
+                return dataProvider.Invite.edit({status: 'sent'}, options);
+            });
+        }
+
+        tasks = [
+            utils.validate(docName, {opts: ['email']}),
+            utils.handlePermissions(docName, 'add'),
+            utils.convertOptions(allowedIncludes),
+            modelQuery
+        ];
+
+        return pipeline(tasks, object, options);
     }
 };
 

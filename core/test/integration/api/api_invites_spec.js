@@ -34,10 +34,40 @@ describe('Invites API', function () {
         //@TODO: testUtils.DataGenerator.forKnex.invites
         it('add invite', function (done) {
             InvitesAPI.add({
-                email: 'kate@ghost.org'
+                invites: [{email: 'kate@ghost.org'}]
             }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
                 .then(function () {
                     done();
+                }).catch(done);
+        });
+
+        it('add invite: empty invites object', function (done) {
+            InvitesAPI.add({invites: []}, {
+                context: {
+                    user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'},
+                    user: 1
+                }
+            })
+                .then(function () {
+                    throw new Error('expected validation error')
+                })
+                .catch(function (err) {
+                    should.exist(err);
+                    done();
+                });
+        });
+
+        it('add invite: no email provided', function (done) {
+            InvitesAPI.add({invites: [{status: 'sent'}]}, {
+                context: {
+                    user1: {
+                        name: 'Owner',
+                        email: 'katharina.irrgang@gmail.com'
+                    }, user: 1
+                }
+            })
+                .then(function () {
+                    throw new Error('expected validation error')
                 }).catch(done);
         });
 
