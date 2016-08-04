@@ -12,7 +12,6 @@ Invite = ghostBookshelf.Model.extend({
 
         var attrs = ghostBookshelf.Model.prototype.toJSON.call(this, options);
         delete attrs.token;
-        delete attrs.expires;
         return attrs;
     }
 }, {

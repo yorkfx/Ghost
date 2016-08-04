@@ -100,10 +100,10 @@ describe('Invites API', function () {
                     response.invites[1].email.should.eql('kate+2@ghost.org');
 
                     should.not.exist(response.invites[0].token);
-                    should.not.exist(response.invites[0].expires);
+                    should.exist(response.invites[0].expires);
 
                     should.not.exist(response.invites[1].token);
-                    should.not.exist(response.invites[1].expires);
+                    should.exist(response.invites[1].expires);
 
                     done();
                 }).catch(done);
