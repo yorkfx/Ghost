@@ -65,10 +65,12 @@ describe('Invites API', function () {
                         email: 'katharina.irrgang@gmail.com'
                     }, user: 1
                 }
-            })
-                .then(function () {
-                    throw new Error('expected validation error')
-                }).catch(done);
+            }).then(function () {
+                throw new Error('expected validation error')
+            }).catch(function (err) {
+                (err instanceof errors.ValidationError).should.eql(true);
+                done();
+            });
         });
 
         it('browse invites', function (done) {

@@ -329,7 +329,8 @@
                 "postNotFound": "Post not found."
             },
             "invites": {
-                "inviteNotFound": "Invite not found."
+                "inviteNotFound": "Invite not found.",
+                "emailIsRequired": "E-Mail is required."
             },
             "job": {
                 "notFound": "Job not found.",

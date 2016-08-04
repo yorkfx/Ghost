@@ -81,8 +81,7 @@ invites = {
 
         return pipeline(tasks, options);
     },
-
-    //@TODO: input validation (email is required?)
+    
     //@TODO: invite email twice?
     //@TODO: fix user1 ;)
     add: function add(object, options) {
@@ -92,6 +91,10 @@ invites = {
             invite;
 
         function modelQuery(options) {
+            if (!options.data.invites[0].email) {
+                return Promise.reject(new errors.ValidationError(i18n.t('errors.api.invites.emailIsRequired')));
+            }
+
             return dataProvider.Invite.add({
                 email: options.data.invites[0].email
             }, options).then(function (_invite) {
