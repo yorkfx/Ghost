@@ -12,6 +12,8 @@ var testUtils = require('../../utils'),
     sandbox = sinon.sandbox.create();
 
 describe('Invites API', function () {
+    var invites = [];
+
     before(testUtils.teardown);
 
     //@TODO: change to afterAll
@@ -32,12 +34,24 @@ describe('Invites API', function () {
         before(testUtils.setup('owner:pre', 'perms:invite', 'perms:init'));
 
         //@TODO: testUtils.DataGenerator.forKnex.invites
-        it('add invite', function (done) {
+        it('add invite 1', function (done) {
             InvitesAPI.add({
-                invites: [{email: 'kate@ghost.org'}]
+                invites: [{email: 'kate+1@ghost.org'}]
             }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
                 .then(function (response) {
                     response.invites.length.should.eql(1);
+                    invites.push(response.invites[0]);
+                    done();
+                }).catch(done);
+        });
+
+        it('add invite 2', function (done) {
+            InvitesAPI.add({
+                invites: [{email: 'kate+2@ghost.org'}]
+            }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
+                .then(function (response) {
+                    response.invites.length.should.eql(1);
+                    invites.push(response.invites[0]);
                     done();
                 }).catch(done);
         });
@@ -77,11 +91,20 @@ describe('Invites API', function () {
         it('browse invites', function (done) {
             InvitesAPI.browse(testUtils.context.owner)
                 .then(function (response) {
-                    response.invites.length.should.eql(1);
+                    response.invites.length.should.eql(2);
+
                     response.invites[0].status.should.eql('sent');
-                    response.invites[0].email.should.eql('kate@ghost.org');
+                    response.invites[0].email.should.eql('kate+1@ghost.org');
+
+                    response.invites[1].status.should.eql('sent');
+                    response.invites[1].email.should.eql('kate+2@ghost.org');
+
                     should.not.exist(response.invites[0].token);
                     should.not.exist(response.invites[0].expires);
+
+                    should.not.exist(response.invites[1].token);
+                    should.not.exist(response.invites[1].expires);
+
                     done();
                 }).catch(done);
         });
@@ -98,7 +121,7 @@ describe('Invites API', function () {
         });
 
         it('read invites', function (done) {
-            InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate@ghost.org'}))
+            InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate+1@ghost.org'}))
                 .then(function (response) {
                     response.invites.length.should.eql(1);
                     done();
@@ -106,16 +129,21 @@ describe('Invites API', function () {
         });
 
         it('destroy invite', function (done) {
-            InvitesAPI.destroy(_.merge(testUtils.context.owner, {id: 1}))
+            InvitesAPI.destroy({context: {user: 1}, id: invites[0].id})
                 .then(function () {
-                    done();
+                    return InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate+1@ghost.org'}))
+                        .catch(function (err) {
+                            (err instanceof errors.NotFoundError).should.eql(true);
+                            done();
+                        });
                 }).catch(done);
         });
 
         it('browse invites', function (done) {
             InvitesAPI.browse(testUtils.context.owner)
                 .then(function (response) {
-                    response.invites.length.should.eql(0);
+                    response.invites.length.should.eql(1);
+                    response.invites[0].email.should.eql('kate+2@ghost.org');
                     done();
                 }).catch(done);
         });

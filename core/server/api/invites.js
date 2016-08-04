@@ -64,7 +64,7 @@ invites = {
         var tasks;
 
         function modelQuery(options) {
-            return dataProvider.Invite.findOne(options.data, _.omit(options, ['data']))
+            return dataProvider.Invite.findOne({id: options.id}, _.omit(options, ['data']))
                 .then(function (invite) {
                     return invite.destroy(options).return(null);
                 }).catch(dataProvider.Invite.NotFoundError, function () {
