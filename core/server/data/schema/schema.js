@@ -25,6 +25,7 @@ module.exports = {
         published_by: {type: 'integer', nullable: true}
     },
     invites: {
+        //@TODO: add role (or reference role)
         id: {type: 'increments', nullable: false, primary: true},
         token: {type: 'string', nullable: false, unique: true},
         email: {type: 'string', maxlength: 254, nullable: false, unique: true, validations: {isEmail: true}},
