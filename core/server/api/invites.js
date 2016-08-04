@@ -132,6 +132,9 @@ invites = {
             }).then(function () {
                 options.id = invite.id;
                 return dataProvider.Invite.edit({status: 'sent'}, options);
+            }).then(function () {
+                var inviteAsJSON = invite.toJSON();
+                return {invites: [inviteAsJSON]};
             });
         }
 

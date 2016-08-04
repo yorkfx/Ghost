@@ -36,7 +36,8 @@ describe('Invites API', function () {
             InvitesAPI.add({
                 invites: [{email: 'kate@ghost.org'}]
             }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
-                .then(function () {
+                .then(function (response) {
+                    response.invites.length.should.eql(1);
                     done();
                 }).catch(done);
         });

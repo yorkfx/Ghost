@@ -5,7 +5,16 @@ var ghostBookshelf = require('./base'),
     Invites;
 
 Invite = ghostBookshelf.Model.extend({
-    tableName: 'invites'
+    tableName: 'invites',
+
+    toJSON: function (options) {
+        options = options || {};
+
+        var attrs = ghostBookshelf.Model.prototype.toJSON.call(this, options);
+        delete attrs.token;
+        delete attrs.expires;
+        return attrs;
+    }
 }, {
     orderDefaultOptions: function orderDefaultOptions() {
         return {};
