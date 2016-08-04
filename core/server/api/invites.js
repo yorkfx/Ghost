@@ -50,26 +50,24 @@ invites = {
             modelQuery
         ];
 
-        return pipeline(tasks, options).then(function formatResponse(result) {
-            if (result) {
-                return {invites: [result.toJSON(options)]};
-            }
+        return pipeline(tasks, options)
+            .then(function formatResponse(result) {
+                if (result) {
+                    return {invites: [result.toJSON(options)]};
+                }
 
-            return Promise.reject(new errors.NotFoundError(i18n.t('errors.api.invites.inviteNotFound')));
-        });
+                return Promise.reject(new errors.NotFoundError(i18n.t('errors.api.invites.inviteNotFound')));
+            });
     },
 
     destroy: function destroy(options) {
         var tasks;
 
-        function deletePost(options) {
-            var data = _.defaults({status: 'all'}, options),
-                fetchOpts = _.defaults({require: true, columns: 'id'}, options);
-
-            return dataProvider.Invite.findOne(data, fetchOpts)
+        function modelQuery(options) {
+            return dataProvider.Invite.findOne(options.data, _.omit(options, ['data']))
                 .then(function (invite) {
                     return invite.destroy(options).return(null);
-                }).catch(Invite.NotFoundError, function () {
+                }).catch(dataProvider.Invite.NotFoundError, function () {
                     throw new errors.NotFoundError(i18n.t('errors.api.invites.inviteNotFound'));
                 });
         }
@@ -78,7 +76,7 @@ invites = {
             utils.validate(docName, {opts: utils.idDefaultOptions}),
             utils.handlePermissions(docName, 'destroy'),
             utils.convertOptions(allowedIncludes),
-            deletePost
+            modelQuery
         ];
 
         return pipeline(tasks, options);

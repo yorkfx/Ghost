@@ -71,5 +71,20 @@ describe('Invites API', function () {
                     done();
                 }).catch(done);
         });
+
+        it('destroy invite', function (done) {
+            InvitesAPI.destroy(_.merge(testUtils.context.owner, {id: 1}))
+                .then(function () {
+                    done();
+                }).catch(done);
+        });
+
+        it('browse invites', function (done) {
+            InvitesAPI.browse(testUtils.context.owner)
+                .then(function (response) {
+                    response.invites.length.should.eql(0);
+                    done();
+                }).catch(done);
+        });
     });
 });

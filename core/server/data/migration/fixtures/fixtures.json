@@ -304,6 +304,11 @@
                     "name": "Add invites",
                     "action_type": "add",
                     "object_type": "invite"
+                },
+                {
+                    "name": "Delete invites",
+                    "action_type": "destroy",
+                    "object_type": "invite"
                 }
             ]
         }
