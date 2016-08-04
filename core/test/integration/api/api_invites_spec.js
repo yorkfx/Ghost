@@ -6,6 +6,7 @@ var testUtils = require('../../utils'),
     uid = require('../../../server/utils').uid,
     InvitesAPI = require('../../../server/api/invites'),
     mail = require('../../../server/api/mail'),
+    errors = require('../../../server/errors'),
     context = testUtils.context,
 
     sandbox = sinon.sandbox.create();
@@ -48,6 +49,25 @@ describe('Invites API', function () {
                     response.invites[0].email.should.eql('kate@ghost.org');
                     should.not.exist(response.invites[0].token);
                     should.not.exist(response.invites[0].expires);
+                    done();
+                }).catch(done);
+        });
+
+        it('read invites: not found', function (done) {
+            InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'not-existend@hey.org'}))
+                .then(function () {
+                    throw new Error('expected not found error for invite');
+                })
+                .catch(function (err) {
+                    (err instanceof errors.NotFoundError).should.eql(true);
+                    done();
+                });
+        });
+
+        it('read invites', function (done) {
+            InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate@ghost.org'}))
+                .then(function (response) {
+                    response.invites.length.should.eql(1);
                     done();
                 }).catch(done);
         });
