@@ -24,6 +24,16 @@ module.exports = {
         published_at: {type: 'dateTime', nullable: true},
         published_by: {type: 'integer', nullable: true}
     },
+    invites: {
+        id: {type: 'increments', nullable: false, primary: true},
+        token: {type: 'string', nullable: false, unique: true},
+        email: {type: 'string', maxlength: 254, nullable: false, unique: true, validations: {isEmail: true}},
+        expires: {type: 'bigInteger', nullable: false},
+        created_at: {type: 'dateTime', nullable: false},
+        created_by: {type: 'integer', nullable: false},
+        updated_at: {type: 'dateTime', nullable: true},
+        updated_by: {type: 'integer', nullable: true}
+    },
     users: {
         id: {type: 'increments', nullable: false, primary: true},
         uuid: {type: 'string', maxlength: 36, nullable: false, validations: {isUUID: true}},

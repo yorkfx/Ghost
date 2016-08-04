@@ -292,7 +292,29 @@ authentication = {
         return pipeline(tasks, resetRequest);
     },
 
+    createInvite: function createInvite(data, options) {
+        //@TODO: input validation (email is required?)
+        //@TODO: invite email twice?
+
+        return dataProvider.Invite.add({
+            email: data.email
+        }).then(function (invite) {
+            var emailData = {
+                blogName: blogTitle,
+                invitedByName: invitedBy.name,
+                invitedByEmail: invitedBy.email
+            };
+
+            return apiMail.send();
+        });
+    },
+
+    acceptInvite: function acceptInvite() {
+
+    },
+
     /**
+     * @deprecated
      * ### Accept Invitation
      * @param {Object} invitation an invitation object
      * @returns {Promise<Object>}
