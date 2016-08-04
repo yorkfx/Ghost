@@ -328,6 +328,9 @@
             "posts": {
                 "postNotFound": "Post not found."
             },
+            "invites": {
+                "inviteNotFound": "Invite not found."
+            },
             "job": {
                 "notFound": "Job not found.",
                 "publishInThePast": "Use the force flag to publish a post in the past."

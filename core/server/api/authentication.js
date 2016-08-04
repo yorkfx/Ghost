@@ -292,48 +292,6 @@ authentication = {
         return pipeline(tasks, resetRequest);
     },
 
-    createInvite: function createInvite(data, options) {
-        //@TODO: input validation (email is required?)
-        //@TODO: invite email twice?
-        //@TODO: fix user1 ;)
-        var loggedInUser = options.context.user1,
-            emailData;
-
-        return dataProvider.Invite.add({
-            email: data.email
-        }, options).then(function (invite) {
-            //@TODO: get blogname
-            var baseUrl = config.forceAdminSSL ? (config.urlSSL || config.url) : config.url;
-
-            emailData = {
-                blogName: 'Boobie blog',
-                invitedByName: loggedInUser.name,
-                invitedByEmail: loggedInUser.email,
-                //@TODO: resetLink sounds weird
-                resetLink: baseUrl.replace(/\/$/, '') + '/ghost/signup/' + globalUtils.encodeBase64URLsafe(invite.get('token')) + '/'
-            };
-
-            return mail.utils.generateContent({data: emailData, template: 'invite-user'});
-        }).then(function (emailContent) {
-            var payload = {
-                mail: [{
-                    message: {
-                        to: data.email,
-                        subject: i18n.t('common.api.users.mail.invitedByName', {
-                            invitedByName: emailData.invitedByName,
-                            blogName: emailData.blogName
-                        }),
-                        html: emailContent.html,
-                        text: emailContent.text
-                    },
-                    options: {}
-                }]
-            };
-
-            return apiMail.send(payload, {context: {internal: true}});
-        });
-    },
-
     acceptInvite: function acceptInvite() {
 
     },

@@ -7,8 +7,18 @@ var ghostBookshelf = require('./base'),
 Invite = ghostBookshelf.Model.extend({
     tableName: 'invites'
 }, {
+    orderDefaultOptions: function orderDefaultOptions() {
+        return {};
+    },
+
+    processOptions: function processOptions(options) {
+        return options;
+    },
+
     add: function add(data, options) {
+        //@TODO: add bookshelf defaults?
         data.expires = Date.now() + globalUtils.ONE_WEEK_MS;
+        data.status = 'pending';
 
         //@TODO: add filterData, filterOptions
         var hash = crypto.createHash('sha256'),
@@ -19,8 +29,7 @@ Invite = ghostBookshelf.Model.extend({
         text += [data.expires, data.email, hash.digest('base64')].join('|');
         data.token = new Buffer(text).toString('base64');
 
-        var model = this.forge(data);
-        return model.save(null, options);
+        return ghostBookshelf.Model.add.call(this, data, options);
     }
 });
 

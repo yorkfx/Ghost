@@ -162,9 +162,7 @@ apiRoutes = function apiRoutes(middleware) {
     router.post('/invites', authenticatePrivate, api.http(api.invites.add));
     router.del('/invites/:id', authenticatePrivate, api.http(api.invites.destroy));
 
-    router.post('/authentication/invite', authenticatePrivate, api.http(api.authentication.createInvite));
     router.post('/authentication/invite/accept', api.http(api.authentication.acceptInvite));
-
     router.post('/authentication/ghost', [
         middleware.api.authenticateClient,
         middleware.api.authenticateGhostUser,
