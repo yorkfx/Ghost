@@ -36,7 +36,7 @@ describe('Invites API', function () {
         //@TODO: testUtils.DataGenerator.forKnex.invites
         it('add invite 1', function (done) {
             InvitesAPI.add({
-                invites: [{email: 'kate+1@ghost.org'}]
+                invites: [{email: 'kate+1@ghost.org', roles: [testUtils.roles.ids.editor]}]
             }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
                 .then(function (response) {
                     response.invites.length.should.eql(1);
@@ -47,7 +47,7 @@ describe('Invites API', function () {
 
         it('add invite 2', function (done) {
             InvitesAPI.add({
-                invites: [{email: 'kate+2@ghost.org'}]
+                invites: [{email: 'kate+2@ghost.org', roles: [testUtils.roles.ids.editor]}]
             }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
                 .then(function (response) {
                     response.invites.length.should.eql(1);

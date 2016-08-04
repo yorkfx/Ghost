@@ -19,9 +19,7 @@ invites = {
     browse: function browse(options) {
         var tasks;
 
-        //@TODO: do not return tokens
         function modelQuery(options) {
-            options.columns = ['id', 'email', 'status'];
             return dataProvider.Invite.findPage(options);
         }
 
@@ -91,53 +89,61 @@ invites = {
             invite;
 
         function modelQuery(options) {
+            var data = {};
+
             if (!options.data.invites[0].email) {
                 return Promise.reject(new errors.ValidationError(i18n.t('errors.api.invites.emailIsRequired')));
             }
 
-            return dataProvider.Invite.add({
-                email: options.data.invites[0].email
-            }, options).then(function (_invite) {
-                invite = _invite;
+            if (!options.data.invites[0].roles || !options.data.invites[0].roles[0]) {
+                return Promise.reject(new errors.ValidationError(i18n.t('errors.api.invites.roleIsRequired')));
+            }
 
-                //@TODO: get blogname
-                var baseUrl = config.forceAdminSSL ? (config.urlSSL || config.url) : config.url;
+            data.email = options.data.invites[0].email;
+            data.role_id = options.data.invites[0].roles[0];
 
-                emailData = {
-                    blogName: 'Boobie blog',
-                    invitedByName: loggedInUser.name,
-                    invitedByEmail: loggedInUser.email,
-                    //@TODO: resetLink sounds weird
-                    resetLink: baseUrl.replace(/\/$/, '') + '/ghost/signup/' + globalUtils.encodeBase64URLsafe(invite.get('token')) + '/'
-                };
+            return dataProvider.Invite.add(data, options)
+                .then(function (_invite) {
+                    invite = _invite;
 
-                return mail.utils.generateContent({data: emailData, template: 'invite-user'});
-            }).then(function (emailContent) {
-                var payload = {
-                    mail: [{
-                        message: {
-                            to: options.data.invites[0].email,
-                            subject: i18n.t('common.api.users.mail.invitedByName', {
-                                invitedByName: emailData.invitedByName,
-                                blogName: emailData.blogName
-                            }),
-                            html: emailContent.html,
-                            text: emailContent.text
-                        },
-                        options: {}
-                    }]
-                };
+                    //@TODO: get blogname
+                    var baseUrl = config.forceAdminSSL ? (config.urlSSL || config.url) : config.url;
 
-                return apiMail.send(payload, {context: {internal: true}});
-            }).then(function () {
-                options.id = invite.id;
-                return dataProvider.Invite.edit({status: 'sent'}, options);
-            }).then(function (_invite) {
-                invite = _invite;
+                    emailData = {
+                        blogName: 'Boobie blog',
+                        invitedByName: loggedInUser.name,
+                        invitedByEmail: loggedInUser.email,
+                        //@TODO: resetLink sounds weird
+                        resetLink: baseUrl.replace(/\/$/, '') + '/ghost/signup/' + globalUtils.encodeBase64URLsafe(invite.get('token')) + '/'
+                    };
 
-                var inviteAsJSON = invite.toJSON();
-                return {invites: [inviteAsJSON]};
-            });
+                    return mail.utils.generateContent({data: emailData, template: 'invite-user'});
+                }).then(function (emailContent) {
+                    var payload = {
+                        mail: [{
+                            message: {
+                                to: options.data.invites[0].email,
+                                subject: i18n.t('common.api.users.mail.invitedByName', {
+                                    invitedByName: emailData.invitedByName,
+                                    blogName: emailData.blogName
+                                }),
+                                html: emailContent.html,
+                                text: emailContent.text
+                            },
+                            options: {}
+                        }]
+                    };
+
+                    return apiMail.send(payload, {context: {internal: true}});
+                }).then(function () {
+                    options.id = invite.id;
+                    return dataProvider.Invite.edit({status: 'sent'}, options);
+                }).then(function (_invite) {
+                    invite = _invite;
+
+                    var inviteAsJSON = invite.toJSON();
+                    return {invites: [inviteAsJSON]};
+                });
         }
 
         tasks = [

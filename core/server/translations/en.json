@@ -330,7 +330,8 @@
             },
             "invites": {
                 "inviteNotFound": "Invite not found.",
-                "emailIsRequired": "E-Mail is required."
+                "emailIsRequired": "E-Mail is required.",
+                "roleIsRequired": "Role is required"
             },
             "job": {
                 "notFound": "Job not found.",

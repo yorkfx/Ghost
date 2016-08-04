@@ -292,10 +292,6 @@ authentication = {
         return pipeline(tasks, resetRequest);
     },
 
-    acceptInvite: function acceptInvite() {
-
-    },
-
     /**
      * @deprecated
      * ### Accept Invitation
