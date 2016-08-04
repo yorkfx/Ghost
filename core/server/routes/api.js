@@ -157,6 +157,11 @@ apiRoutes = function apiRoutes(middleware) {
         middleware.oauth.generateAccessToken
     );
 
+    // ## Invites
+    router.get('/invites', authenticatePrivate, api.http(api.invites.browse));
+    router.post('/invites', authenticatePrivate, api.http(api.invites.add));
+    router.del('/invites/:id', authenticatePrivate, api.http(api.invites.destroy));
+
     router.post('/authentication/invite', authenticatePrivate, api.http(api.authentication.createInvite));
     router.post('/authentication/invite/accept', api.http(api.authentication.acceptInvite));
 
