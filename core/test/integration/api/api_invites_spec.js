@@ -47,7 +47,7 @@ describe('Invites API', function () {
 
         it('add invite 2', function (done) {
             InvitesAPI.add({
-                invites: [{email: 'kate+2@ghost.org', roles: [testUtils.roles.ids.editor]}]
+                invites: [{email: 'kate+2@ghost.org', roles: [testUtils.roles.ids.author]}]
             }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
                 .then(function (response) {
                     response.invites.length.should.eql(1);
@@ -62,14 +62,12 @@ describe('Invites API', function () {
                     user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'},
                     user: 1
                 }
-            })
-                .then(function () {
-                    throw new Error('expected validation error')
-                })
-                .catch(function (err) {
-                    should.exist(err);
-                    done();
-                });
+            }).then(function () {
+                throw new Error('expected validation error')
+            }).catch(function (err) {
+                should.exist(err);
+                done();
+            });
         });
 
         it('add invite: no email provided', function (done) {
@@ -95,9 +93,13 @@ describe('Invites API', function () {
 
                     response.invites[0].status.should.eql('sent');
                     response.invites[0].email.should.eql('kate+1@ghost.org');
+                    response.invites[0].roles.length.should.eql(1);
+                    response.invites[0].roles[0].name.should.eql('Editor');
 
                     response.invites[1].status.should.eql('sent');
                     response.invites[1].email.should.eql('kate+2@ghost.org');
+                    response.invites[1].roles.length.should.eql(1);
+                    response.invites[1].roles[0].name.should.eql('Author');
 
                     should.not.exist(response.invites[0].token);
                     should.exist(response.invites[0].expires);
@@ -137,6 +139,17 @@ describe('Invites API', function () {
                             done();
                         });
                 }).catch(done);
+        });
+
+        it('destroy invite: id does not exist', function (done) {
+            InvitesAPI.destroy({context: {user: 1}, id: 100})
+                .then(function () {
+                    throw new Error('expect error on destroy invite');
+                })
+                .catch(function (err) {
+                    (err instanceof errors.NotFoundError).should.eql(true);
+                    done();
+                });
         });
 
         it('browse invites', function (done) {

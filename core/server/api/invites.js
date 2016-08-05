@@ -20,6 +20,7 @@ invites = {
         var tasks;
 
         function modelQuery(options) {
+            options.include = ['roles'];
             return dataProvider.Invite.findPage(options);
         }
 
@@ -38,6 +39,7 @@ invites = {
             tasks;
 
         function modelQuery(options) {
+            options.include = ['roles'];
             return dataProvider.Invite.findOne(options.data, _.omit(options, ['data']));
         }
 
@@ -64,9 +66,11 @@ invites = {
         function modelQuery(options) {
             return dataProvider.Invite.findOne({id: options.id}, _.omit(options, ['data']))
                 .then(function (invite) {
+                    if (!invite) {
+                        throw new errors.NotFoundError(i18n.t('errors.api.invites.inviteNotFound'));
+                    }
+
                     return invite.destroy(options).return(null);
-                }).catch(dataProvider.Invite.NotFoundError, function () {
-                    throw new errors.NotFoundError(i18n.t('errors.api.invites.inviteNotFound'));
                 });
         }
 
@@ -80,7 +84,6 @@ invites = {
         return pipeline(tasks, options);
     },
 
-    //@TODO: invite email twice?
     //@TODO: fix user1 ;)
     add: function add(object, options) {
         var tasks,
@@ -88,21 +91,10 @@ invites = {
             emailData,
             invite;
 
-        function modelQuery(options) {
-            var data = {};
+        function addInvite(options) {
+            var data = options.data;
 
-            if (!options.data.invites[0].email) {
-                return Promise.reject(new errors.ValidationError(i18n.t('errors.api.invites.emailIsRequired')));
-            }
-
-            if (!options.data.invites[0].roles || !options.data.invites[0].roles[0]) {
-                return Promise.reject(new errors.ValidationError(i18n.t('errors.api.invites.roleIsRequired')));
-            }
-
-            data.email = options.data.invites[0].email;
-            data.role_id = options.data.invites[0].roles[0];
-
-            return dataProvider.Invite.add(data, options)
+            return dataProvider.Invite.add(data.invites[0], _.omit(options, 'data'))
                 .then(function (_invite) {
                     invite = _invite;
 
@@ -122,7 +114,7 @@ invites = {
                     var payload = {
                         mail: [{
                             message: {
-                                to: options.data.invites[0].email,
+                                to: invite.get('email'),
                                 subject: i18n.t('common.api.users.mail.invitedByName', {
                                     invitedByName: emailData.invitedByName,
                                     blogName: emailData.blogName
@@ -146,11 +138,40 @@ invites = {
                 });
         }
 
+        function destroyOldInvite(options) {
+            var data = options.data;
+
+            return dataProvider.Invite.findOne({email: data.invites[0].email}, _.omit(options, 'data'))
+                .then(function (invite) {
+                    if (!invite) {
+                        return Promise.resolve(options);
+                    }
+
+                    return invite.destroy(options).returns(options);
+                });
+        }
+
+        function validation(options) {
+            var data = {};
+
+            if (!options.data.invites[0].email) {
+                return Promise.reject(new errors.ValidationError(i18n.t('errors.api.invites.emailIsRequired')));
+            }
+
+            if (!options.data.invites[0].roles || !options.data.invites[0].roles[0]) {
+                return Promise.reject(new errors.ValidationError(i18n.t('errors.api.invites.roleIsRequired')));
+            }
+
+            return Promise.resolve(options);
+        }
+
         tasks = [
             utils.validate(docName, {opts: ['email']}),
             utils.handlePermissions(docName, 'add'),
             utils.convertOptions(allowedIncludes),
-            modelQuery
+            validation,
+            destroyOldInvite,
+            addInvite
         ];
 
         return pipeline(tasks, object, options);
