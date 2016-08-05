@@ -40,6 +40,9 @@ describe('Invites API', function () {
             }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
                 .then(function (response) {
                     response.invites.length.should.eql(1);
+                    response.invites[0].roles.length.should.eql(1);
+                    response.invites[0].roles[0].name.should.eql('Editor');
+
                     invites.push(response.invites[0]);
                     done();
                 }).catch(done);
@@ -51,6 +54,9 @@ describe('Invites API', function () {
             }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
                 .then(function (response) {
                     response.invites.length.should.eql(1);
+                    response.invites[0].roles.length.should.eql(1);
+                    response.invites[0].roles[0].name.should.eql('Author');
+
                     invites.push(response.invites[0]);
                     done();
                 }).catch(done);
@@ -126,6 +132,18 @@ describe('Invites API', function () {
             InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate+1@ghost.org'}))
                 .then(function (response) {
                     response.invites.length.should.eql(1);
+                    response.invites[0].roles.length.should.eql(1);
+                    response.invites[0].roles[0].name.should.eql('Editor');
+                    done();
+                }).catch(done);
+        });
+
+        it('read invites', function (done) {
+            InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate+2@ghost.org'}))
+                .then(function (response) {
+                    response.invites.length.should.eql(1);
+                    response.invites[0].roles.length.should.eql(1);
+                    response.invites[0].roles[0].name.should.eql('Author');
                     done();
                 }).catch(done);
         });

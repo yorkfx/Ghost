@@ -39,6 +39,33 @@ Invite = ghostBookshelf.Model.extend({
         return filteredData;
     },
 
+    permittedOptions: function permittedOptions(methodName) {
+        var options = ghostBookshelf.Model.permittedOptions(),
+            validOptions = {
+                findOne: ['withRelated'],
+                edit: ['withRelated'],
+                findPage: ['withRelated']
+            };
+
+        if (validOptions[methodName]) {
+            options = options.concat(validOptions[methodName]);
+        }
+
+        return options;
+    },
+
+    findOne: function findOne(data, options) {
+        options.include = ['roles'];
+        options.withRelated = ['roles'];
+        return ghostBookshelf.Model.findOne.call(this, data, options)
+    },
+
+    findPage: function findPage(options) {
+        options.include = ['roles'];
+        options.withRelated = ['roles'];
+        return ghostBookshelf.Model.findPage.call(this, options)
+    },
+
     add: function add(data, options) {
         //@TODO: add bookshelf defaults?
         data.expires = Date.now() + globalUtils.ONE_WEEK_MS;
@@ -52,7 +79,9 @@ Invite = ghostBookshelf.Model.extend({
         text += [data.expires, data.email, hash.digest('base64')].join('|');
         data.token = new Buffer(text).toString('base64');
 
-        var roles = data.roles, invite;
+        var roles = data.roles,
+            self = this,
+            invite;
 
         delete data.roles;
 
@@ -76,7 +105,7 @@ Invite = ghostBookshelf.Model.extend({
                     });
             })
             .then(function () {
-                return invite;
+                return self.findOne({id: invite.id}, options);
             });
     }
 });

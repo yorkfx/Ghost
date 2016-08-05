@@ -20,7 +20,6 @@ invites = {
         var tasks;
 
         function modelQuery(options) {
-            options.include = ['roles'];
             return dataProvider.Invite.findPage(options);
         }
 
@@ -39,7 +38,6 @@ invites = {
             tasks;
 
         function modelQuery(options) {
-            options.include = ['roles'];
             return dataProvider.Invite.findOne(options.data, _.omit(options, ['data']));
         }
 
@@ -130,9 +128,8 @@ invites = {
                 }).then(function () {
                     options.id = invite.id;
                     return dataProvider.Invite.edit({status: 'sent'}, options);
-                }).then(function (_invite) {
-                    invite = _invite;
-
+                }).then(function () {
+                    invite.set('status', 'sent');
                     var inviteAsJSON = invite.toJSON();
                     return {invites: [inviteAsJSON]};
                 });
