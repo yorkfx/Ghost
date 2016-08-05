@@ -144,7 +144,10 @@ invites = {
                         return Promise.resolve(options);
                     }
 
-                    return invite.destroy(options).returns(options);
+                    return invite.destroy(options);
+                })
+                .then(function () {
+                    return options;
                 });
         }
 
