@@ -295,6 +295,8 @@ User = ghostBookshelf.Model.extend({
             query.query('whereIn', 'status', activeStates);
         } else if (status === 'invited') {
             query.query('whereIn', 'status', invitedStates);
+        } else if (status === 'inactive') {
+            query.query('where', {status: status});
         } else if (status !== 'all') {
             query.query('where', {status: options.status});
         }
