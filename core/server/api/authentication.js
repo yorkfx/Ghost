@@ -136,7 +136,6 @@ authentication = {
             client = options.context.client_id,
             user = options.context.user;
 
-        console.log('createTokens', user, client);
         return dataProvider.Accesstoken.add({
             token: localAccessToken,
             user_id: user,
