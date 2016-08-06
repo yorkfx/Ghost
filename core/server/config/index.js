@@ -208,6 +208,12 @@ ConfigManager.prototype.set = function (config) {
         schedulingPath = path.join(contentPath, '/scheduling/');
     }
 
+    //@TODO: change to pwd default
+    //@TODO: change daisy blog config to use patronus
+    if (!this._config.auth || !this._config.auth.type) {
+        this._config.auth = {type: 'patronus'};
+    }
+
     _.merge(this._config, {
         ghostVersion: packageInfo.version,
         paths: {
