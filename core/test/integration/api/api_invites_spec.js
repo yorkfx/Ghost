@@ -114,7 +114,7 @@ describe('Invites API', function () {
         });
 
         it('read invites: not found', function (done) {
-            InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'not-existend@hey.org'}))
+            InvitesAPI.read(_.merge({}, testUtils.context.owner, {email: 'not-existend@hey.org'}))
                 .then(function () {
                     throw new Error('expected not found error for invite');
                 })
@@ -125,7 +125,7 @@ describe('Invites API', function () {
         });
 
         it('read invites', function (done) {
-            InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate+1@ghost.org'}))
+            InvitesAPI.read(_.merge({}, testUtils.context.owner, {email: 'kate+1@ghost.org'}))
                 .then(function (response) {
                     response.invites.length.should.eql(1);
                     response.invites[0].roles.length.should.eql(1);
@@ -135,7 +135,7 @@ describe('Invites API', function () {
         });
 
         it('read invites', function (done) {
-            InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate+2@ghost.org'}))
+            InvitesAPI.read(_.merge({}, testUtils.context.owner, {email: 'kate+2@ghost.org'}))
                 .then(function (response) {
                     response.invites.length.should.eql(1);
                     response.invites[0].roles.length.should.eql(1);
@@ -147,7 +147,7 @@ describe('Invites API', function () {
         it('destroy invite', function (done) {
             InvitesAPI.destroy({context: {user: 1}, id: invites[0].id})
                 .then(function () {
-                    return InvitesAPI.read(_.merge(testUtils.context.owner, {email: 'kate+1@ghost.org'}))
+                    return InvitesAPI.read(_.merge({}, testUtils.context.owner, {email: 'kate+1@ghost.org'}))
                         .catch(function (err) {
                             (err instanceof errors.NotFoundError).should.eql(true);
                             done();

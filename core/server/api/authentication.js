@@ -293,7 +293,6 @@ authentication = {
     },
 
     /**
-     * @deprecated
      * ### Accept Invitation
      * @param {Object} invitation an invitation object
      * @returns {Promise<Object>}
