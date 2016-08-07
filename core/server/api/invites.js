@@ -82,27 +82,36 @@ invites = {
         return pipeline(tasks, options);
     },
 
-    //@TODO: fix user1 ;)
     add: function add(object, options) {
         var tasks,
-            loggedInUser = options.context.user1,
+            loggedInUser = options.context.user,
             emailData,
             invite;
 
         function addInvite(options) {
             var data = options.data;
 
-            return dataProvider.Invite.add(data.invites[0], _.omit(options, 'data'))
+            return dataProvider.User.findOne({id: loggedInUser}, options)
+                .then(function (user) {
+                    if (!user) {
+                        return Promise.reject(new errors.NotFoundError(i18n.t('errors.api.users.userNotFound')));
+                    }
+
+                    loggedInUser = user;
+                    return dataProvider.Invite.add(data.invites[0], _.omit(options, 'data'))
+                })
                 .then(function (_invite) {
                     invite = _invite;
 
-                    //@TODO: get blogname
+                    return settings.read({key: 'title'});
+                })
+                .then(function (response) {
                     var baseUrl = config.forceAdminSSL ? (config.urlSSL || config.url) : config.url;
 
                     emailData = {
-                        blogName: 'Boobie blog',
-                        invitedByName: loggedInUser.name,
-                        invitedByEmail: loggedInUser.email,
+                        blogName: response.settings[0].value,
+                        invitedByName: loggedInUser.get('name'),
+                        invitedByEmail: loggedInUser.get('email'),
                         //@TODO: resetLink sounds weird
                         resetLink: baseUrl.replace(/\/$/, '') + '/ghost/signup/' + globalUtils.encodeBase64URLsafe(invite.get('token')) + '/'
                     };
@@ -176,6 +185,7 @@ invites = {
 
         return pipeline(tasks, object, options);
     }
-};
+}
+;
 
 module.exports = invites;
