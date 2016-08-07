@@ -53,6 +53,14 @@ config = {
         //  },
         // ```
 
+        auth: {
+            urls: {
+                tokenURL: 'http://patronus.ghostfoundation.org:8080/oauth2/token',
+                registerURL: 'http://patronus.ghostfoundation.org:8080/oauth2/client',
+                userProfileURL: 'http://patronus.ghostfoundation.org:8080/oauth2/userinfo'
+            }
+        },
+
         // #### Database
         // Ghost supports sqlite3 (default), MySQL & PostgreSQL
         database: {

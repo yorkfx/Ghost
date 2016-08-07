@@ -209,8 +209,12 @@ ConfigManager.prototype.set = function (config) {
     }
 
     //@TODO: change daisy blog config to use patronus
-    if (!this._config.auth || !this._config.auth.type) {
-        this._config.auth = {type: 'patronus'};
+    if (!this._config.auth) {
+        this._config.auth = {};
+    }
+
+    if (!this._config.auth.type) {
+        this._config.auth.type = 'patronus';
     }
 
     _.merge(this._config, {
