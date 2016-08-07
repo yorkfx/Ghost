@@ -31,13 +31,13 @@ describe('Invites API', function () {
 
     describe('Invite Flow', function () {
         //@TODO: change to beforeAll
-        before(testUtils.setup('owner:pre', 'perms:invite', 'perms:init'));
+        before(testUtils.setup('owner:pre', 'owner:post', 'perms:invite', 'perms:init'));
 
         //@TODO: testUtils.DataGenerator.forKnex.invites
         it('add invite 1', function (done) {
             InvitesAPI.add({
                 invites: [{email: 'kate+1@ghost.org', roles: [testUtils.roles.ids.editor]}]
-            }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
+            }, {context: {user: 1}})
                 .then(function (response) {
                     response.invites.length.should.eql(1);
                     response.invites[0].roles.length.should.eql(1);
@@ -51,7 +51,7 @@ describe('Invites API', function () {
         it('add invite 2', function (done) {
             InvitesAPI.add({
                 invites: [{email: 'kate+2@ghost.org', roles: [testUtils.roles.ids.author]}]
-            }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1}})
+            }, {context: {user: 1}})
                 .then(function (response) {
                     response.invites.length.should.eql(1);
                     response.invites[0].roles.length.should.eql(1);
@@ -65,7 +65,6 @@ describe('Invites API', function () {
         it('add invite: empty invites object', function (done) {
             InvitesAPI.add({invites: []}, {
                 context: {
-                    user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'},
                     user: 1
                 }
             }).then(function () {
@@ -79,10 +78,7 @@ describe('Invites API', function () {
         it('add invite: no email provided', function (done) {
             InvitesAPI.add({invites: [{status: 'sent'}]}, {
                 context: {
-                    user1: {
-                        name: 'Owner',
-                        email: 'katharina.irrgang@gmail.com'
-                    }, user: 1
+                    user: 1
                 }
             }).then(function () {
                 throw new Error('expected validation error')

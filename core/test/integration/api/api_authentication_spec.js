@@ -54,24 +54,6 @@ describe('Authentication API', function () {
 
     should.exist(AuthAPI);
 
-    //@TODO: group this file into password, invite, setup?
-    describe('Invite Flow', function () {
-        beforeEach(testUtils.setup('owner:pre', 'perms:init'));
-
-        before(function () {
-
-        });
-
-        it.only('invite somebody', function (done) {
-            AuthAPI.createInvite({
-                email: 'kate@ghost.org'
-            }, {context: {user1: {name: 'Owner', email: 'katharina.irrgang@gmail.com'}, user: 1 }})
-                .then(function () {
-                    done();
-                }).catch(done);
-        });
-    });
-
     describe('Setup', function () {
         describe('Cannot run', function () {
             before(function () {

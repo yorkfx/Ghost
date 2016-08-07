@@ -99,6 +99,9 @@ config = {
             },
             useNullAsDefault: true
         },
+        auth: {
+            type: 'password'
+        },
         server: {
             host: '127.0.0.1',
             port: '2369'
@@ -120,6 +123,9 @@ config = {
                 charset  : 'utf8'
             }
         },
+        auth: {
+            type: 'password'
+        },
         server: {
             host: '127.0.0.1',
             port: '2369'
@@ -140,6 +146,9 @@ config = {
                 database : 'ghost_testing',
                 charset  : 'utf8'
             }
+        },
+        auth: {
+            type: 'password'
         },
         server: {
             host: '127.0.0.1',
