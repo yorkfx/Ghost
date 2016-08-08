@@ -156,6 +156,8 @@ function init(options) {
                 });
             });
 
+        //@TODO: remove and let auth module auto init
+        //@TODO: parentApp.use is not needed
         return auth.init(config.auth)
             .then(function (response) {
                 parentApp.use(response.auth);
