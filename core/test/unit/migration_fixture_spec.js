@@ -1452,9 +1452,9 @@ describe('Fixtures', function () {
                 clientOneStub.calledThrice.should.be.true();
                 clientAddStub.calledThrice.should.be.true();
 
-                permOneStub.callCount.should.eql(44);
+                permOneStub.callCount.should.eql(47);
                 permsAddStub.called.should.be.true();
-                permsAddStub.callCount.should.eql(44);
+                permsAddStub.callCount.should.eql(47);
 
                 permsAllStub.calledOnce.should.be.true();
                 rolesAllStub.calledOnce.should.be.true();
